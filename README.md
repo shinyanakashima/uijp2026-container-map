@@ -76,7 +76,14 @@ npm run basemap
 
 `main` へのpushで GitHub Pages に自動デプロイされます（`.github/workflows/deploy.yml`）。
 
-初回のみ、リポジトリの Settings → Pages → Source を **GitHub Actions** にしてください。
+**初回のみ、リポジトリ側の設定が要ります。** ワークフローのトークンでは Pages サイトを作成できないためです。
+
+1. Settings → Pages → Build and deployment → Source を **GitHub Actions** にする
+2. Settings → Actions → General → Workflow permissions が **Read and write permissions** になっていることを確認する
+
+設定後、Actions タブから「GitHub Pages へデプロイ」を Run workflow で実行すると公開されます。以降は `main` へのpushで自動的に更新されます。
+
+公開先は `https://shinyanakashima.github.io/uijp2026-container-map/` です。
 
 ## 構成
 

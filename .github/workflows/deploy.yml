@@ -33,9 +33,9 @@ jobs:
       - run: npm run typecheck
       - run: npm run build
 
+      # Pages サイトの作成には管理者権限が要るため、ここでは作らない。
+      # リポジトリの Settings → Pages → Source を GitHub Actions にしておくこと。
       - uses: actions/configure-pages@v5
-        with:
-          enablement: true
 
       - uses: actions/upload-pages-artifact@v3
         with:
