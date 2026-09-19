@@ -5,7 +5,7 @@
 //
 // 実行: npm run build && npm run check
 
-import { chromium } from "playwright";
+import { chromium, devices } from "playwright";
 import { createServer } from "node:http";
 import fs from "node:fs";
 import { mkdir, readFile, stat } from "node:fs/promises";
@@ -143,6 +143,61 @@ await page.getByRole("button", { name: "在庫表示" }).click();
 await page.waitForTimeout(800);
 await page.locator(".maplibregl-ctrl-zoom-in").click();
 await shot("05-containers", 3500);
+
+// ---------------------------------------------------------------- 狭い画面
+console.log(`\n=== スマートフォン（iPhone 14 相当） ===`);
+const phone = await browser.newContext({ ...devices["iPhone 14"] });
+const ph = await phone.newPage();
+await ph.route("**/*", (route) => {
+  const url = route.request().url();
+  if (url.startsWith(`http://127.0.0.1:${PORT}`) || url.startsWith("data:") || url.startsWith("blob:")) {
+    return route.continue();
+  }
+  external.push(url);
+  return route.abort();
+});
+await ph.goto(`http://127.0.0.1:${PORT}${PREFIX}/`, { waitUntil: "load" });
+await ph.waitForSelector(".panel", { timeout: 30000 });
+await ph.waitForTimeout(6000);
+
+const layout = await ph.evaluate(() => {
+  const vp = { w: innerWidth, h: innerHeight };
+  const box = (s) => { const b = document.querySelector(s).getBoundingClientRect();
+    return { w: Math.round(b.width), h: Math.round(b.height), top: Math.round(b.top) }; };
+  const map = box(".map-area"), panel = box(".panel");
+  const hidden = Math.max(0, Math.min(vp.h, panel.top + panel.h) - Math.max(0, panel.top)) * panel.w;
+  return { ratio: Math.round((map.w * map.h - hidden) / (vp.w * vp.h) * 100), panelH: panel.h };
+});
+check("地図が画面の7割以上を占める", layout.ratio >= 70, `${layout.ratio}%`);
+check("畳んだパネルが下端のバーだけになる", layout.panelH <= 80, `${layout.panelH}px`);
+check("架空データの注記と出典が畳んだ状態でも見えている",
+  await ph.locator(".panel-bar .disclaimer").isVisible() &&
+  await ph.locator(".panel-bar .source").isVisible());
+
+await ph.locator('input[type="range"]').fill("55");
+await ph.waitForTimeout(1200);
+await ph.getByRole("button", { name: "過不足表示" }).click();
+await ph.waitForTimeout(2500);
+const phoneSpot = await ph.evaluate(() => {
+  const el = [...document.querySelectorAll(".base-label")].find((e) => e.textContent.includes("芽室 第1"));
+  if (!el) throw new Error("芽室 第1集荷拠点のラベルが見つかりません");
+  const r = el.getBoundingClientRect();
+  return { x: r.left + r.width / 2, y: r.top - 10 };
+});
+await ph.touchscreen.tap(phoneSpot.x, phoneSpot.y);
+await ph.waitForTimeout(3000);
+await ph.screenshot({ path: `${SHOTS}/06-phone-candidates.png` });
+check("近接した拠点でも狙った拠点を選べる",
+  (await ph.locator(".panel-toggle").innerText()).includes("芽室 第1集荷拠点"),
+  await ph.locator(".panel-toggle").innerText().then((t) => t.replace(/\n/g, " ")));
+const phoneLinks = await ph.locator(".link-label").allTextContents();
+check("スマホでも融通候補が3件出る", phoneLinks.length === 3, phoneLinks.join(" / "));
+
+await ph.locator(".panel-toggle").click();
+await ph.waitForTimeout(800);
+await ph.screenshot({ path: `${SHOTS}/07-phone-panel.png` });
+check("バーを押すと内訳が開く",
+  (await ph.locator(".panel-scroll").innerText()).includes("想定必要数"));
 
 console.log(`\n=== 外部通信 ===`);
 check("外部ホストへの通信が一度も発生していない", external.length === 0,

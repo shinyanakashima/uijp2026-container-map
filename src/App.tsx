@@ -21,6 +21,8 @@ export function App() {
   const [selected, setSelected] = useState<number | null>(null);
   const [playing, setPlaying] = useState(false);
   const [basemap, setBasemap] = useState<Basemap>("pale");
+  /** 狭い画面でのパネルの開閉。広い画面では常に開いた扱い */
+  const [panelOpen, setPanelOpen] = useState(false);
   /** 俯瞰に戻したいときに増やす。地図側がこれを見てカメラを戻す */
   const [viewResetKey, setViewResetKey] = useState(0);
 
@@ -33,6 +35,7 @@ export function App() {
   const resetToInitial = useCallback(() => {
     setDay(0); setMode("stock"); setSelected(null); setPlaying(false);
     setBasemap("pale");
+    setPanelOpen(false);
     setViewResetKey((k) => k + 1);
   }, []);
   const touch = useCallback(() => {
@@ -126,7 +129,15 @@ export function App() {
             ))}
           </div>
         </div>
-        <SidePanel dataset={dataset} day={day} mode={mode} selected={selected} links={links} />
+        <SidePanel
+          dataset={dataset}
+          day={day}
+          mode={mode}
+          selected={selected}
+          links={links}
+          open={panelOpen}
+          onToggle={() => setPanelOpen((o) => !o)}
+        />
       </main>
     </div>
   );

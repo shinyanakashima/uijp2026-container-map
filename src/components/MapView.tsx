@@ -1,11 +1,11 @@
 import { useEffect, useRef } from "react";
 import {
   LngLatBounds, Map as MlMap, Marker, NavigationControl, addProtocol,
-  type GeoJSONSource, type MapMouseEvent, type MapGeoJSONFeature,
+  type GeoJSONSource, type MapMouseEvent,
   type ExpressionSpecification,
 } from "maplibre-gl";
 import { Protocol } from "pmtiles";
-import type { FeatureCollection, Feature } from "geojson";
+import type { FeatureCollection, Feature, Point } from "geojson";
 import type { Dataset } from "../types.ts";
 import { buildBasemapStyle, type Basemap } from "../basemapStyle.ts";
 import {
@@ -31,7 +31,12 @@ interface Props {
 /** 拠点全体が収まる範囲。初期表示と無操作リセットの両方でこれに戻す */
 export const OVERVIEW_BOUNDS: [[number, number], [number, number]] =
   [[142.74, 42.20], [143.82, 43.54]];
-const OVERVIEW_FIT = { padding: 56, maxZoom: 9, duration: 0 } as const;
+/** 画面が狭いときは余白を詰める。固定値だと拠点全体が小さくなりすぎる */
+const overviewFit = (duration: number) => ({
+  padding: Math.max(16, Math.min(56, window.innerWidth * 0.06)),
+  maxZoom: 9,
+  duration,
+});
 
 const EMPTY: FeatureCollection = { type: "FeatureCollection", features: [] };
 
@@ -77,7 +82,7 @@ export function MapView({
       container: holder.current,
       style: buildBasemapStyle(),
       bounds: OVERVIEW_BOUNDS,
-      fitBoundsOptions: OVERVIEW_FIT,
+      fitBoundsOptions: overviewFit(0),
       minZoom: 6,
       maxZoom: 13.9,
       maxBounds: [[141.9, 41.8], [144.8, 44.0]],
@@ -159,14 +164,19 @@ export function MapView({
         paint: { "circle-radius": ["max", ["get", "r"], 22], "circle-opacity": 0 },
       });
 
-      map.on("click", "bases-hit", (e: MapMouseEvent & { features?: MapGeoJSONFeature[] }) => {
-        const f = e.features?.[0];
-        if (f) onSelect(f.properties.index as number);
-      });
       map.on("click", (e: MapMouseEvent) => {
-        if (map.queryRenderedFeatures(e.point, { layers: ["bases-hit"] }).length === 0) {
-          onSelect(null);
+        const hits = map.queryRenderedFeatures(e.point, { layers: ["bases-hit"] });
+        if (hits.length === 0) { onSelect(null); return; }
+        // 拠点が近接していると判定領域が重なる。押した点に最も近いものを選ぶ
+        let best = hits[0];
+        let bestDistance = Infinity;
+        for (const hit of hits) {
+          const g = hit.geometry as Point;
+          const p = map.project(g.coordinates as [number, number]);
+          const d = (p.x - e.point.x) ** 2 + (p.y - e.point.y) ** 2;
+          if (d < bestDistance) { bestDistance = d; best = hit; }
         }
+        onSelect(best.properties.index as number);
       });
       map.on("mouseenter", "bases-hit", () => { map.getCanvas().style.cursor = "pointer"; });
       map.on("mouseleave", "bases-hit", () => { map.getCanvas().style.cursor = ""; });
@@ -221,7 +231,7 @@ export function MapView({
   useEffect(() => {
     const map = mapRef.current;
     if (!map || viewResetKey === 0) return;
-    whenReady(() => map.fitBounds(OVERVIEW_BOUNDS, { ...OVERVIEW_FIT, duration: 600 }));
+    whenReady(() => map.fitBounds(OVERVIEW_BOUNDS, overviewFit(600)));
   }, [viewResetKey]);
 
   // ---------------------------------------------------------------- 拠点とコンテナ
@@ -301,7 +311,11 @@ export function MapView({
       const pts = [dataset.bases[links[0].from], ...links.map((l) => dataset.bases[l.to])];
       const bounds = new LngLatBounds();
       for (const p of pts) bounds.extend([p.lng, p.lat]);
-      map.fitBounds(bounds, { padding: 160, maxZoom: 10.5, duration: 700 });
+      map.fitBounds(bounds, {
+        padding: Math.max(48, Math.min(160, window.innerWidth * 0.14)),
+        maxZoom: 10.5,
+        duration: 700,
+      });
 
       // 90秒シナリオの山場。線を不足拠点から余剰拠点へ伸ばして描く
       const start = performance.now();

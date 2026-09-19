@@ -15,7 +15,10 @@ export function TopBar({ dates, day, mode, playing, onDay, onMode, onTogglePlay 
   return (
     <header className="topbar">
       <div className="topbar-title">
-        <h1>農業用コンテナ 所在・過不足マップ</h1>
+        <h1>
+          <span className="title-full">農業用コンテナ 所在・過不足マップ</span>
+          <span className="title-short">コンテナ 所在・過不足</span>
+        </h1>
         <p>十勝管内／展示デモ</p>
       </div>
 

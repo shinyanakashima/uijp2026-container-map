@@ -11,14 +11,34 @@ interface Props {
   mode: Mode;
   selected: number | null;
   links: Link[];
+  /** 狭い画面でパネルを開いているか */
+  open: boolean;
+  onToggle: () => void;
 }
 
-export function SidePanel({ dataset, day, mode, selected, links }: Props) {
+export function SidePanel({ dataset, day, mode, selected, links, open, onToggle }: Props) {
   const st = dataset.stats[day];
   const total = dataset.containers.length;
 
   return (
-    <aside className="panel">
+    <aside className={`panel${open ? " is-open" : ""}`}>
+      {/* 狭い画面では下端のバーだけを残して折りたためるようにする */}
+      <div className="panel-bar">
+        <button
+          type="button"
+          className="panel-toggle"
+          onClick={onToggle}
+          aria-expanded={open}
+        >
+          <span aria-hidden="true">{open ? "▼" : "▲"}</span>
+          {open ? "閉じる" : selected === null ? "全体サマリ" : dataset.bases[selected].name}
+        </button>
+        <div className="panel-notes">
+          <p className="disclaimer">本画面のデータはすべて架空のものです。</p>
+          <p className="source">出典：国土地理院（地理院タイルを加工して作成）</p>
+        </div>
+      </div>
+
       <div className="panel-scroll">
         {selected === null ? (
           <section>
@@ -31,8 +51,8 @@ export function SidePanel({ dataset, day, mode, selected, links }: Props) {
             </dl>
             <p className="hint">
               {mode === "stock"
-                ? "拠点をクリックすると内訳を表示します。ズームすると個体が点で表示されます。"
-                : "不足拠点をクリックすると、近い余剰拠点からの融通候補を表示します。"}
+                ? "拠点を選ぶと内訳を表示します。ズームすると個体が点で表示されます。"
+                : "不足拠点を選ぶと、近い余剰拠点からの融通候補を表示します。"}
             </p>
           </section>
         ) : (
@@ -47,8 +67,6 @@ export function SidePanel({ dataset, day, mode, selected, links }: Props) {
           <p>一定期間戻らないコンテナを検知し、最後に確認された拠点とあわせて通知する仕組みも想定しています。</p>
         </section>
       </div>
-
-      <p className="disclaimer">本画面のデータはすべて架空のものです。</p>
     </aside>
   );
 }
