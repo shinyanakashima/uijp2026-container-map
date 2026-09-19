@@ -1,0 +1,218 @@
+/* 展示端末（1920×1080 のノートPC、13インチ級タブレット）を想定。
+   Webフォントは読み込まず、システムフォントのみを使う。 */
+
+:root {
+  --bg: #f4f3f0;
+  --panel: #ffffff;
+  --border: #d7d4ce;
+  --text: #23282c;
+  --muted: #6d7379;
+  --accent: #3d6b80;
+  --accent-soft: #e7eef1;
+  --tap: 44px;
+}
+
+* { box-sizing: border-box; }
+
+html, body, #root { height: 100%; margin: 0; }
+
+body {
+  font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, system-ui, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-text-size-adjust: 100%;
+}
+
+.layout { display: flex; flex-direction: column; height: 100%; }
+
+/* ---------------------------------------------------------------- 上部バー */
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 10px 20px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  flex: 0 0 auto;
+}
+
+.topbar-title h1 { font-size: 16px; margin: 0; letter-spacing: .02em; }
+.topbar-title p { font-size: 12px; margin: 2px 0 0; color: var(--muted); }
+
+.mode-switch { display: flex; border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
+.mode-switch button {
+  min-height: var(--tap);
+  min-width: 108px;
+  padding: 0 16px;
+  border: 0;
+  background: var(--panel);
+  color: var(--muted);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+.mode-switch button + button { border-left: 1px solid var(--border); }
+.mode-switch button.is-active { background: var(--accent); color: #fff; }
+
+.time-control { display: flex; align-items: center; gap: 16px; flex: 1 1 auto; }
+
+.play-button {
+  min-height: var(--tap);
+  min-width: var(--tap);
+  padding: 0 18px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--panel);
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+.play-button:hover { background: var(--accent-soft); }
+
+.slider-wrap { flex: 1 1 auto; min-width: 200px; }
+
+.slider-wrap input[type="range"] {
+  width: 100%;
+  height: var(--tap);
+  margin: 0;
+  background: transparent;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+}
+.slider-wrap input[type="range"]::-webkit-slider-runnable-track {
+  height: 4px; background: var(--border); border-radius: 2px;
+}
+.slider-wrap input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 24px; height: 24px; margin-top: -10px;
+  border-radius: 50%; background: var(--accent); border: 3px solid #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,.3);
+}
+.slider-wrap input[type="range"]::-moz-range-track { height: 4px; background: var(--border); border-radius: 2px; }
+.slider-wrap input[type="range"]::-moz-range-thumb {
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--accent); border: 3px solid #fff;
+}
+
+.slider-scale {
+  display: flex; justify-content: space-between;
+  font-size: 11px; color: var(--muted); margin-top: -6px;
+}
+
+.date-readout {
+  min-width: 96px; text-align: right;
+  font-size: 18px; font-variant-numeric: tabular-nums;
+}
+
+/* ---------------------------------------------------------------- 本体 */
+
+.stage { display: flex; flex: 1 1 auto; min-height: 0; }
+.map-holder { flex: 1 1 auto; min-width: 0; }
+
+.panel {
+  flex: 0 0 320px;
+  width: 320px;
+  background: var(--panel);
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.panel-scroll { flex: 1 1 auto; overflow-y: auto; padding: 18px 18px 8px; }
+
+.panel h2 { font-size: 15px; margin: 0 0 2px; }
+.panel h3 { font-size: 12px; margin: 18px 0 6px; color: var(--muted); font-weight: 600; letter-spacing: .04em; }
+.subhead { font-size: 12px; color: var(--muted); margin: 0 0 12px; }
+.hint { font-size: 12px; color: var(--muted); line-height: 1.7; margin: 10px 0 0; }
+
+.figures { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0 0; }
+.figures div { background: #faf9f7; border: 1px solid var(--border); border-radius: 4px; padding: 8px 10px; }
+.figures dt { font-size: 11px; color: var(--muted); }
+.figures dd { margin: 2px 0 0; font-size: 22px; font-variant-numeric: tabular-nums; }
+.figures dd span { font-size: 11px; color: var(--muted); margin-left: 3px; }
+
+.imbalance { margin: 12px 0 0; font-size: 13px; color: var(--muted); }
+.imbalance strong { font-size: 24px; font-variant-numeric: tabular-nums; margin: 0 4px; }
+.imbalance.is-short strong { color: #a3562b; }
+.imbalance.is-surplus strong { color: #2c6c82; }
+
+.breakdown { list-style: none; margin: 0; padding: 0; }
+.breakdown li {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13px; padding: 5px 0; border-bottom: 1px solid #efedea;
+}
+.breakdown li i { width: 12px; height: 12px; border-radius: 50%; border: 1px solid transparent; flex: 0 0 auto; }
+.breakdown li span { flex: 1 1 auto; }
+.breakdown li b { font-variant-numeric: tabular-nums; font-weight: 600; }
+
+.candidates { list-style: none; margin: 0; padding: 0; }
+.candidates li {
+  display: flex; justify-content: space-between; gap: 8px;
+  font-size: 13px; padding: 7px 0; border-bottom: 1px solid #efedea;
+}
+.candidates li b { font-weight: 600; font-variant-numeric: tabular-nums; color: var(--accent); white-space: nowrap; }
+
+.ramp div:first-child { height: 10px; border-radius: 2px; border: 1px solid var(--border); }
+.ramp-scale { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+.legend { border-top: 1px solid var(--border); margin-top: 18px; padding-top: 4px; }
+
+.concept { border-top: 1px solid var(--border); margin-top: 18px; padding-top: 4px; }
+.concept p { font-size: 12px; line-height: 1.75; color: var(--muted); margin: 0 0 8px; }
+
+.disclaimer {
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 10px 18px;
+  font-size: 11px;
+  color: var(--muted);
+  background: #f6f4f0;
+  border-top: 1px solid var(--border);
+}
+
+.loading { display: grid; place-content: center; height: 100%; text-align: center; color: var(--muted); }
+
+/* ---------------------------------------------------------------- 地図上の文字 */
+
+.base-label {
+  visibility: hidden;
+  opacity: 0;
+  padding: 1px 5px;
+  font-size: 11px;
+  line-height: 1.5;
+  white-space: nowrap;
+  color: #2c3338;
+  background: rgba(255,255,255,.82);
+  border-radius: 2px;
+  pointer-events: none;
+}
+.base-label.is-visible { visibility: visible; opacity: 1; }
+.base-label.is-selected {
+  visibility: visible; opacity: 1;
+  font-weight: 700;
+  background: rgba(255,255,255,.95);
+}
+
+.link-label {
+  padding: 3px 8px;
+  font-size: 12px;
+  white-space: nowrap;
+  color: #1f4250;
+  background: rgba(255,255,255,.93);
+  border: 1px solid #b9ccd4;
+  border-radius: 3px;
+  pointer-events: none;
+}
+
+.maplibregl-ctrl-attrib { font-size: 10px; }
+
+/* ---------------------------------------------------------------- 13インチ級タブレット */
+
+@media (max-width: 1180px) {
+  .topbar { flex-wrap: wrap; gap: 12px 16px; }
+  .time-control { order: 3; flex-basis: 100%; }
+  .panel { flex-basis: 300px; width: 300px; }
+}

@@ -3,6 +3,29 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "generate": "node scripts/generate-data.ts"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "generate": "node scripts/generate-data.ts",
+    "basemap": "node scripts/build-basemap.ts",
+    "check": "node scripts/check-demo.mjs",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@protomaps/basemaps": "^5.7.2",
+    "maplibre-gl": "^6.10.0",
+    "pmtiles": "^4.5.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
+  },
+  "devDependencies": {
+    "@types/geojson": "^7946.0.16",
+    "@types/node": "^26.6.2",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.1",
+    "playwright": "^1.63.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.0"
   }
 }
