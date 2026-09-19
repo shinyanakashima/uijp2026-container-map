@@ -1,0 +1,8 @@
+{
+  "name": "uijp2026-container-map",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "generate": "node scripts/generate-data.ts"
+  }
+}

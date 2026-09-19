@@ -1,0 +1,389 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          143.1963,
+          42.9239
+        ]
+      },
+      "properties": {
+        "id": "obihiro-1",
+        "name": "帯広 第1集荷拠点",
+        "city": "帯広市",
+        "capacity": 100
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          143.151,
+          42.9165
+        ]
+      },
+      "properties": {
+        "id": "obihiro-2",
+        "name": "帯広 西部保管拠点",
+        "city": "帯広市",
+        "capacity": 75
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          143.21,
+          42.876
+        ]
+      },
+      "properties": {
+        "id": "obihiro-3",
+        "name": "帯広 南部中継拠点",
+        "city": "帯広市",
+        "capacity": 55
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          143.2032,
+          42.9759
+        ]
+      },
+      "properties": {
+        "id": "otofuke-1",
+        "name": "音更 第1集荷拠点",
+        "city": "音更町",
+        "capacity": 80
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          143.22,
+          43.033
+        ]
+      },
+      "properties": {
+        "id": "otofuke-2",
+        "name": "音更 北部保管拠点",
+        "city": "音更町",
+        "capacity": 45
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          143.0494,
+          42.9106
+        ]
+      },
+      "properties": {
+        "id": "memuro-1",
+        "name": "芽室 第1集荷拠点",
+        "city": "芽室町",
+        "capacity": 85
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          142.98,
+          42.889
+        ]
+      },
+      "properties": {
+        "id": "memuro-2",
+        "name": "芽室 西部中継拠点",
+        "city": "芽室町",
+        "capacity": 50
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          143.3573,
+          42.9106
+        ]
+      },
+      "properties": {
+        "id": "makubetsu-1",
+        "name": "幕別 第1集荷拠点",
+        "city": "幕別町",
+        "capacity": 75
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          143.27,
+          42.888
+        ]
+      },
+      "properties": {
+        "id": "makubetsu-2",
+        "name": "幕別 札内保管拠点",
+        "city": "幕別町",
+        "capacity": 45
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          143.2412,
+          43.1414
+        ]
+      },
+      "properties": {
+        "id": "shihoro",
+        "name": "士幌 集荷拠点",
+        "city": "士幌町",
+        "capacity": 55
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          143.2896,
+          43.2364
+        ]
+      },
+      "properties": {
+        "id": "kamishihoro",
+        "name": "上士幌 集荷拠点",
+        "city": "上士幌町",
+        "capacity": 40
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          142.9962,
+          43.0803
+        ]
+      },
+      "properties": {
+        "id": "shikaoi",
+        "name": "鹿追 集荷拠点",
+        "city": "鹿追町",
+        "capacity": 45
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          142.8367,
+          43.0793
+        ]
+      },
+      "properties": {
+        "id": "shintoku",
+        "name": "新得 中継拠点",
+        "city": "新得町",
+        "capacity": 35
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          142.8853,
+          43
+        ]
+      },
+      "properties": {
+        "id": "shimizu",
+        "name": "清水 集荷拠点",
+        "city": "清水町",
+        "capacity": 55
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          143.135,
+          42.71
+        ]
+      },
+      "properties": {
+        "id": "nakasatsunai",
+        "name": "中札内 集荷拠点",
+        "city": "中札内村",
+        "capacity": 50
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          143.0472,
+          42.6656
+        ]
+      },
+      "properties": {
+        "id": "sarabetsu",
+        "name": "更別 集荷拠点",
+        "city": "更別村",
+        "capacity": 40
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          143.296,
+          42.4886
+        ]
+      },
+      "properties": {
+        "id": "taiki",
+        "name": "大樹 集荷拠点",
+        "city": "大樹町",
+        "capacity": 35
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          143.3121,
+          42.2842
+        ]
+      },
+      "properties": {
+        "id": "hiroo",
+        "name": "広尾 港湾中継拠点",
+        "city": "広尾町",
+        "capacity": 30
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          143.4506,
+          42.9247
+        ]
+      },
+      "properties": {
+        "id": "ikeda",
+        "name": "池田 集荷拠点",
+        "city": "池田町",
+        "capacity": 40
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          143.5083,
+          42.8175
+        ]
+      },
+      "properties": {
+        "id": "toyokoro",
+        "name": "豊頃 集荷拠点",
+        "city": "豊頃町",
+        "capacity": 30
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          143.6094,
+          43.1236
+        ]
+      },
+      "properties": {
+        "id": "honbetsu",
+        "name": "本別 集荷拠点",
+        "city": "本別町",
+        "capacity": 40
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          143.55,
+          43.2436
+        ]
+      },
+      "properties": {
+        "id": "ashoro",
+        "name": "足寄 集荷拠点",
+        "city": "足寄町",
+        "capacity": 35
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          143.7383,
+          43.465
+        ]
+      },
+      "properties": {
+        "id": "rikubetsu",
+        "name": "陸別 保管拠点",
+        "city": "陸別町",
+        "capacity": 25
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          143.6547,
+          42.8047
+        ]
+      },
+      "properties": {
+        "id": "urahoro",
+        "name": "浦幌 集荷拠点",
+        "city": "浦幌町",
+        "capacity": 35
+      }
+    }
+  ]
+}
