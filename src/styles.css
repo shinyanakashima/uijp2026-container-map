@@ -110,7 +110,34 @@ body {
 /* ---------------------------------------------------------------- 本体 */
 
 .stage { display: flex; flex: 1 1 auto; min-height: 0; }
-.map-holder { flex: 1 1 auto; min-width: 0; }
+/* 地図の外に出たマーカーが右パネルに重ならないよう切り落とす */
+.map-area { position: relative; flex: 1 1 auto; min-width: 0; overflow: hidden; }
+.map-holder { position: absolute; inset: 0; }
+
+.basemap-switch {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  display: flex;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--panel);
+  box-shadow: 0 1px 4px rgba(0,0,0,.18);
+}
+.basemap-switch button {
+  min-height: var(--tap);
+  min-width: 64px;
+  padding: 0 14px;
+  border: 0;
+  background: var(--panel);
+  color: var(--muted);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+.basemap-switch button + button { border-left: 1px solid var(--border); }
+.basemap-switch button.is-active { background: var(--accent); color: #fff; }
 
 .panel {
   flex: 0 0 320px;
@@ -190,6 +217,9 @@ body {
   pointer-events: none;
 }
 .base-label.is-visible { visibility: visible; opacity: 1; }
+
+/* 衛星写真の上では背景が濃いため、文字の下地を強める */
+.map-holder.is-photo .base-label { background: rgba(255,255,255,.92); }
 .base-label.is-selected {
   visibility: visible; opacity: 1;
   font-weight: 700;

@@ -7,7 +7,7 @@ import {
 import { Protocol } from "pmtiles";
 import type { FeatureCollection, Feature } from "geojson";
 import type { Dataset } from "../types.ts";
-import { buildBasemapStyle } from "../basemapStyle.ts";
+import { buildBasemapStyle, type Basemap } from "../basemapStyle.ts";
 import {
   BASE_FILL, BASE_RING, FREE_FILL, IMBALANCE_STOPS, LINK_COLOR, TYPE_COLORS,
 } from "../theme.ts";
@@ -25,6 +25,7 @@ interface Props {
   onInteract: () => void;
   /** 値が変わったら俯瞰に戻す */
   viewResetKey: number;
+  basemap: Basemap;
 }
 
 /** 拠点全体が収まる範囲。初期表示と無操作リセットの両方でこれに戻す */
@@ -49,7 +50,9 @@ const radiusForCapacity = (capacity: number): number =>
 const radiusForImbalance = (v: number): number =>
   6 + Math.sqrt(Math.min(1, Math.abs(v) / 70)) * 24;
 
-export function MapView({ dataset, day, mode, selected, links, onSelect, onInteract, viewResetKey }: Props) {
+export function MapView({
+  dataset, day, mode, selected, links, onSelect, onInteract, viewResetKey, basemap,
+}: Props) {
   const holder = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MlMap | null>(null);
   const ready = useRef(false);
@@ -140,13 +143,14 @@ export function MapView({ dataset, day, mode, selected, links, onSelect, onInter
       });
 
       map.addLayer({
+        id: "links-casing", type: "line", source: "links",
+        layout: { "line-cap": "round" },
+        paint: { "line-color": "#ffffff", "line-width": 6, "line-opacity": 0.8 },
+      });
+      map.addLayer({
         id: "links-line", type: "line", source: "links",
         layout: { "line-cap": "round" },
-        paint: {
-          "line-color": LINK_COLOR,
-          "line-width": 3,
-          "line-opacity": 0.9,
-        },
+        paint: { "line-color": LINK_COLOR, "line-width": 3, "line-opacity": 0.95 },
       });
 
       // タップ領域を44px四方以上にするための透明レイヤ
@@ -202,6 +206,16 @@ export function MapView({ dataset, day, mode, selected, links, onSelect, onInter
     // 初期化は一度だけ行う
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // ---------------------------------------------------------------- 背景地図の切替
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    whenReady(() => {
+      map.setLayoutProperty("basemap-pale", "visibility", basemap === "pale" ? "visible" : "none");
+      map.setLayoutProperty("basemap-photo", "visibility", basemap === "photo" ? "visible" : "none");
+    });
+  }, [basemap]);
 
   // ---------------------------------------------------------------- 俯瞰に戻す
   useEffect(() => {
@@ -334,7 +348,7 @@ export function MapView({ dataset, day, mode, selected, links, onSelect, onInter
     return () => { if (animation.current !== null) cancelAnimationFrame(animation.current); };
   }, [links, dataset]);
 
-  return <div ref={holder} className="map-holder" />;
+  return <div ref={holder} className={`map-holder is-${basemap}`} />;
 }
 
 /** 発散配色から過不足に対応する色を求める */

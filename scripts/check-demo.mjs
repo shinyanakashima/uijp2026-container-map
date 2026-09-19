@@ -128,6 +128,16 @@ check("線に距離と融通可能台数が出ている",
 const panel = await page.locator(".panel-scroll").innerText();
 check("右パネルに選択拠点の内訳が出る", panel.includes("芽室 第1集荷拠点") && panel.includes("過不足"));
 
+// 背景地図の切替（地図／衛星）
+await page.getByRole("group", { name: "背景地図の切替" }).getByRole("button", { name: "衛星" }).click();
+await shot("04b-photo", 3500);
+check("衛星に切り替わる",
+  await page.locator(".map-holder").evaluate((e) => e.classList.contains("is-photo")));
+await page.getByRole("group", { name: "背景地図の切替" }).getByRole("button", { name: "地図" }).click();
+await page.waitForTimeout(600);
+check("地図に戻せる",
+  await page.locator(".map-holder").evaluate((e) => e.classList.contains("is-pale")));
+
 // 80〜90秒 在庫表示に戻し、ズーム11以上で個体を表示
 await page.getByRole("button", { name: "在庫表示" }).click();
 await page.waitForTimeout(800);

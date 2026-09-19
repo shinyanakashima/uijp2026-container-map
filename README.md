@@ -54,6 +54,18 @@ npm run check
 4. 不足拠点（芽室 第1集荷拠点など）をクリックすると、候補が3本の線で結ばれる
 5. 「在庫表示」に戻してズームすると、コンテナが個体の点になる
 
+## データの持ち方
+
+地物はGeoJSONで、それ以外は用途に合わせた形式で持っています。
+
+| ファイル | 内容 | 形式 | 理由 |
+| --- | --- | --- | --- |
+| `public/data/bases.geojson` | 拠点24か所 | GeoJSON FeatureCollection（Point） | 位置が固定の地物。そのまま地図のソースになる |
+| `public/data/containers.json` | コンテナ1,200台の台帳 | JSON配列 | 固有の位置を持たない属性データ |
+| `public/data/daily.json.gz` | 92日分の所在とステータス | 列指向JSON（gzip） | 日×個体の時系列。GeoJSONにすると同じ座標を11万回書くことになる |
+
+コンテナの点は、日次データの所在拠点IDから拠点座標を引いて、画面側でGeoJSONに組み立てています。輸送中の個体だけは拠点間の経路上の座標を持つため、日次データに疎に格納しています。
+
 ## データを作り直す
 
 ```
@@ -67,10 +79,20 @@ npm run generate
 ## 背景地図を作り直す
 
 ```
-npm run basemap
+npm run basemap          # 取得して作り直す
+npm run basemap -- --dry-run   # 取得せず枚数だけ見積もる
 ```
 
-公開ベクタタイルから十勝域（ズーム6〜13）を切り出し、`public/basemap/tokachi.pmtiles` として単一ファイルにまとめます。**この処理だけはネットワークを使います。** 一度作れば以降は不要です。
+地理院タイル（淡色地図・写真）から十勝域を切り出し、再圧縮して2つのPMTilesにまとめます。画面左下のボタンで「地図」と「衛星」を切り替えられます。
+
+**この処理だけはネットワークを使います。** 一度作れば以降は不要です。
+
+| ファイル | 元データ | 形式 |
+| --- | --- | --- |
+| `public/basemap/gsi-pale.pmtiles` | 地理院タイル 淡色地図 | パレットPNG |
+| `public/basemap/gsi-photo.pmtiles` | 地理院タイル 写真（シームレス空中写真） | JPEG |
+
+ズーム6〜13のうち、z13は枚数が膨らむため各拠点の周囲のみを取得しています（`Z13_RADIUS_TILES`）。範囲やズームは `scripts/build-basemap.ts` 冒頭の定数で変えられます。
 
 ## 公開
 
@@ -91,14 +113,19 @@ npm run basemap
 docs/spec.md              仕様書
 scripts/bases.ts          拠点24か所の定義（座標は手置き）
 scripts/generate-data.ts  疑似データ生成
-scripts/build-basemap.ts  背景地図のPMTiles化
+scripts/build-basemap.ts  地理院タイルからPMTilesを作成
 scripts/check-demo.mjs    オフライン動作の確認
 src/                      画面
-public/data/              生成済みデータ
-public/basemap/           背景地図
+public/data/              地物データ（拠点はGeoJSON）
+public/basemap/           背景地図（地図・衛星の2ファイル）
 ```
 
 ## 出典
 
-背景地図は OpenStreetMap を原典とし、Protomaps のベクタタイルから作成しています。
-© OpenStreetMap contributors, © Protomaps
+背景地図は地理院タイルを加工して作成しています。
+
+> 出典：国土地理院（地理院タイルを加工して作成）
+
+地理院タイル一覧: https://maps.gsi.go.jp/development/ichiran.html
+
+加工の内容は、対象範囲（十勝管内）の切り出しと、オフライン配布のための再圧縮（淡色地図はパレットPNG化、写真はJPEG再エンコード）です。

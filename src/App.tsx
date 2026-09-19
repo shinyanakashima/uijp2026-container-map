@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { MapView, type Link, type Mode } from "./components/MapView.tsx";
+import { BASEMAP_LABELS, type Basemap } from "./basemapStyle.ts";
 import { TopBar } from "./components/TopBar.tsx";
 import { SidePanel } from "./components/SidePanel.tsx";
 import { distanceKm, loadDataset } from "./data.ts";
@@ -19,6 +20,7 @@ export function App() {
   const [mode, setMode] = useState<Mode>("stock");
   const [selected, setSelected] = useState<number | null>(null);
   const [playing, setPlaying] = useState(false);
+  const [basemap, setBasemap] = useState<Basemap>("pale");
   /** 俯瞰に戻したいときに増やす。地図側がこれを見てカメラを戻す */
   const [viewResetKey, setViewResetKey] = useState(0);
 
@@ -30,6 +32,7 @@ export function App() {
   const idleTimer = useRef<number | null>(null);
   const resetToInitial = useCallback(() => {
     setDay(0); setMode("stock"); setSelected(null); setPlaying(false);
+    setBasemap("pale");
     setViewResetKey((k) => k + 1);
   }, []);
   const touch = useCallback(() => {
@@ -99,16 +102,30 @@ export function App() {
         onTogglePlay={() => setPlaying((p) => !p)}
       />
       <main className="stage">
-        <MapView
-          dataset={dataset}
-          day={day}
-          mode={mode}
-          selected={selected}
-          links={links}
-          onSelect={onSelect}
-          onInteract={touch}
-          viewResetKey={viewResetKey}
-        />
+        <div className="map-area">
+          <MapView
+            dataset={dataset}
+            day={day}
+            mode={mode}
+            selected={selected}
+            links={links}
+            onSelect={onSelect}
+            onInteract={touch}
+            viewResetKey={viewResetKey}
+            basemap={basemap}
+          />
+          <div className="basemap-switch" role="group" aria-label="背景地図の切替">
+            {(Object.keys(BASEMAP_LABELS) as Basemap[]).map((b) => (
+              <button
+                key={b}
+                type="button"
+                className={basemap === b ? "is-active" : ""}
+                aria-pressed={basemap === b}
+                onClick={() => setBasemap(b)}
+              >{BASEMAP_LABELS[b]}</button>
+            ))}
+          </div>
+        </div>
         <SidePanel dataset={dataset} day={day} mode={mode} selected={selected} links={links} />
       </main>
     </div>
