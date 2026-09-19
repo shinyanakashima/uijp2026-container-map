@@ -11,7 +11,7 @@ import { BASES } from "./bases.ts";
 // ---------------------------------------------------------------- 調整パラメータ
 
 const SEED = 20260801;
-const TOTAL_CONTAINERS = 1200;
+const TOTAL_CONTAINERS = 4800;
 const START_DATE = "2026-08-01";
 const DAYS = 92; // 8/1〜10/31
 
@@ -28,7 +28,7 @@ const TRANSIT_RATIO = 0.1;
 const INSPECTION_RATIO = 0.03;
 
 /** 過不足がこの値以上なら余剰拠点、符号反転した値以下なら不足拠点とみなす */
-const IMBALANCE_THRESHOLD = 5;
+const IMBALANCE_THRESHOLD = 20;
 
 /** 完成条件の判定対象期間 */
 const CHECK_FROM = "2026-09-20";
@@ -208,7 +208,7 @@ for (let t = 0; t < DAYS; t++) {
 
   // 4. 輸送中が規定比率に満たない分は、近隣間の通常の循環で埋める
   let guard = 0;
-  while (inTransit < targetTransit && guard++ < 5000) {
+  while (inTransit < targetTransit && guard++ < 40000) {
     const src = pickWeighted(held.map((h) => h.length));
     if (held[src].length === 0) continue;
     const dstW = w.map((x, b) => (b === src ? 0 : x / Math.pow(Math.max(dist[src][b], 5), 1.5)));
@@ -257,8 +257,13 @@ for (let t = 0; t < DAYS; t++) {
     statusOfDay[i][t] = ST_TRANSIT;
     const a = BASES[trFrom[i]], z = BASES[trTo[i]];
     const p = (trTotal[i] - trLeft[i] + 1) / (trTotal[i] + 1);
-    const lng = Math.round((a.lng + (z.lng - a.lng) * p) * 10000) / 10000;
-    const lat = Math.round((a.lat + (z.lat - a.lat) * p) * 10000) / 10000;
+    // 経路上に等間隔で並ぶと数珠つなぎに見えるため、進み具合と位置を散らす
+    const pj = Math.min(0.97, Math.max(0.03, p + (rng() - 0.5) * 0.22));
+    const dx = z.lng - a.lng, dy = z.lat - a.lat;
+    const len = Math.hypot(dx, dy) || 1;
+    const off = (rng() - 0.5) * 0.02;
+    const lng = Math.round((a.lng + dx * pj + (-dy / len) * off) * 10000) / 10000;
+    const lat = Math.round((a.lat + dy * pj + (dx / len) * off) * 10000) / 10000;
     const key = containers[i].id;
     let rec = transitPos.get(key);
     if (!rec) { rec = {}; transitPos.set(key, rec); }

@@ -9,7 +9,8 @@ import type { FeatureCollection, Feature, Point } from "geojson";
 import type { Dataset } from "../types.ts";
 import { buildBasemapStyle, type Basemap } from "../basemapStyle.ts";
 import {
-  BASE_FILL, BASE_RING, FREE_FILL, IMBALANCE_STOPS, LINK_COLOR, TYPE_COLORS,
+  BASE_FILL, BASE_RING, CAPACITY_RANGE, FREE_FILL, IMBALANCE_MAX, IMBALANCE_STOPS,
+  LINK_COLOR, TYPE_COLORS,
 } from "../theme.ts";
 
 export interface Link { from: number; to: number; distKm: number; qty: number; }
@@ -48,12 +49,43 @@ function registerProtocol(): void {
 }
 
 /** 保有台数に比例した円の半径。最小8px、最大28px */
-const radiusForCapacity = (capacity: number): number =>
-  8 + Math.min(1, Math.max(0, (capacity - 25) / 75)) * 20;
+const radiusForCapacity = (capacity: number): number => {
+  const { min, max } = CAPACITY_RANGE;
+  return 8 + Math.min(1, Math.max(0, (capacity - min) / (max - min))) * 20;
+};
 
 /** 過不足の絶対値に比例した円の半径 */
 const radiusForImbalance = (v: number): number =>
-  6 + Math.sqrt(Math.min(1, Math.abs(v) / 70)) * 24;
+  6 + Math.sqrt(Math.min(1, Math.abs(v) / IMBALANCE_MAX)) * 24;
+
+/**
+ * 個体の表示位置を散らすための擬似乱数。
+ * 剰余（i * 素数 % n）だと連番が等間隔に並び、地図上で格子状に見えてしまう。
+ * ビットを混ぜてから正規化することで、連番でも規則性が出ないようにする。
+ */
+function scatter(n: number): number {
+  let x = Math.imul(n ^ 0x9e3779b9, 0x85ebca6b);
+  x ^= x >>> 13;
+  x = Math.imul(x, 0xc2b2ae35);
+  x ^= x >>> 16;
+  return (x >>> 0) / 4294967296;
+}
+
+/** 拠点まわりの散らばりの広がり（緯度の度）。保有台数が多い拠点ほど広く取る */
+const spreadFor = (capacity: number): number =>
+  0.0085 * Math.sqrt(Math.max(capacity, 1) / 200);
+
+/**
+ * 拠点まわりの相対位置。一様な円だと縁がくっきり出て人工的に見えるため、
+ * 中心が密で外ほど疎になる正規分布に従わせる。
+ */
+function offsetAround(index: number): { dx: number; dy: number } {
+  const u1 = Math.max(1e-6, scatter(index * 2 + 1));
+  const u2 = scatter(index * 2 + 2);
+  const radius = Math.min(1.7, Math.sqrt(-2 * Math.log(u1)) * 0.45);
+  const angle = u2 * Math.PI * 2;
+  return { dx: radius * Math.cos(angle), dy: radius * Math.sin(angle) };
+}
 
 export function MapView({
   dataset, day, mode, selected, links, onSelect, onInteract, viewResetKey, basemap,
@@ -272,9 +304,12 @@ export function MapView({
           const b = c.base[day];
           let lng: number, lat: number;
           if (b >= 0) {
-            // 同一拠点の個体が重ならないよう、決定的な微小オフセットを与える
-            lng = dataset.bases[b].lng + (((i * 7919) % 1000) / 1000 - 0.5) * 0.020;
-            lat = dataset.bases[b].lat + (((i * 40503) % 1000) / 1000 - 0.5) * 0.013;
+            const base = dataset.bases[b];
+            const spreadLat = spreadFor(base.capacity);
+            const spreadLng = spreadLat / Math.cos((base.lat * Math.PI) / 180);
+            const { dx, dy } = offsetAround(i);
+            lng = base.lng + spreadLng * dx;
+            lat = base.lat + spreadLat * dy;
           } else {
             const p = d.transit[c.id]?.[String(day)];
             if (!p) continue;

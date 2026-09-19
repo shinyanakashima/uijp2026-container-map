@@ -38,14 +38,18 @@ export const FREE_FILL = "#5b8fa3";
  * MapLibre の interpolate にそのまま渡す。
  */
 export const IMBALANCE_STOPS: [number, string][] = [
-  [-70, "#8f4620"],
-  [-30, "#bc7e50"],
-  [-6, "#ddd7cf"],
+  [-280, "#8f4620"],
+  [-120, "#bc7e50"],
+  [-24, "#ddd7cf"],
   [0, "#d6d4d0"],
-  [6, "#c2d3d9"],
-  [30, "#4e8a9e"],
-  [70, "#1f5f75"],
+  [24, "#c2d3d9"],
+  [120, "#4e8a9e"],
+  [280, "#1f5f75"],
 ];
+
+/** 円の半径を決めるときの、保有台数と過不足の基準値 */
+export const CAPACITY_RANGE = { min: 100, max: 400 };
+export const IMBALANCE_MAX = 280;
 
 /** 融通候補の線 */
 export const LINK_COLOR = "#2f5d6e";
